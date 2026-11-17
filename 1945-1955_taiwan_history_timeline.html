@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1945–1955 臺灣與世界歷史時間軸</title>
+<style>
+:root { --brown:#805638; --line:#987253; --muted:#967d68; --pale:#d8c5b3; }
+* { box-sizing:border-box; }
+body { margin:0; background:#fff; color:#4f4034; font-family: "Noto Sans TC","Microsoft JhengHei",sans-serif; }
+main { max-width:1100px; margin:0 auto; padding:34px 22px 54px; }
+header { text-align:center; margin-bottom:25px; }
+h1 { color:#704b35; font-size:clamp(25px,4vw,36px); margin:0 0 8px; letter-spacing:2px; }
+.subtitle { color:var(--muted); font-size:13px; letter-spacing:2px; }
+.rule { border:0; border-top:1px solid var(--pale); margin:22px 0; }
+h2 { color:#704b35; font-size:18px; margin:0 0 14px; }
+.filters { display:flex; flex-wrap:wrap; gap:18px; margin:12px 0 22px; }
+.filters label { cursor:pointer; font-size:14px; }
+.filters input { accent-color:var(--brown); margin-right:6px; }
+.timeline-wrap { overflow-x:auto; padding:16px 4px 12px; scrollbar-color:#b99a80 #f7f3ef; }
+.timeline { display:flex; align-items:center; min-width:850px; padding:0 10px; }
+.year { flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; position:relative; cursor:pointer; border:0; background:none; color:#775c47; font:inherit; padding:0 0 4px; }
+.year:not(:last-child)::after { content:""; position:absolute; height:2px; background:var(--line); width:100%; left:50%; top:31px; z-index:0; }
+.year .label { font-size:14px; font-weight:650; margin-bottom:13px; }
+.dot { width:13px; height:13px; border-radius:50%; background:#b99a80; border:2px solid #fff; outline:1px solid #b99a80; z-index:1; }
+.year.active .label { color:#a15d37; }
+.year.active .dot { width:17px; height:17px; background:#85502f; outline:2px solid #d8b99f; }
+.hint { color:var(--muted); font-size:12px; margin:4px 0 18px; }
+.selected-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.selected-head h2 { font-size:24px; margin:0; }
+.count { font-size:12px; color:#805638; border:1px solid #d2bba6; border-radius:20px; padding:5px 10px; }
+.events { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:13px; margin-top:16px; }
+.event { border:1px solid #d2bba6; border-radius:9px; padding:15px; background:#fff; }
+.meta { display:flex; justify-content:space-between; align-items:center; gap:8px; color:var(--muted); font-size:12px; margin-bottom:9px; }
+.tag { border:1px solid #d8c5b3; border-radius:20px; padding:3px 8px; color:#805638; white-space:nowrap; }
+.event h3 { color:#5c4635; font-size:16px; margin:0 0 9px; }
+.event p { font-size:14px; line-height:1.7; margin:0 0 10px; }
+.impact { border-top:1px solid #e5d8cb; padding-top:9px; }
+.impact strong { display:block; color:#805b3f; font-size:13px; margin-bottom:4px; }
+.empty { color:var(--muted); background:#faf8f5; border-radius:8px; padding:18px; font-size:14px; }
+footer { color:var(--muted); font-size:12px; line-height:1.7; margin-top:24px; }
+@media(max-width:600px) { main{padding:25px 15px 40px;} .filters{gap:12px;} .events{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>1945－1955 歷史時間軸</h1>
+  <div class="subtitle">臺灣與世界歷史大事記</div>
+</header>
+<hr class="rule">
+<section aria-label="事件圖層">
+  <h2>事件圖層</h2>
+  <div class="filters">
+    <label><input type="checkbox" value="臺灣與政治" checked>臺灣與政治</label>
+    <label><input type="checkbox" value="國際局勢" checked>國際局勢</label>
+    <label><input type="checkbox" value="經濟與社會" checked>經濟與社會</label>
+  </div>
+</section>
+<hr class="rule">
+<section>
+  <h2>年份時間軸</h2>
+  <div class="timeline-wrap"><div class="timeline" id="timeline"></div></div>
+  <div class="hint">← 可左右滑動年份，點選圓點切換 →</div>
+</section>
+<hr class="rule">
+<section>
+  <div class="selected-head"><h2 id="yearTitle">1945 年</h2><span class="count" id="count">0 項事件</span></div>
+  <div class="events" id="events"></div>
+</section>
+<footer>時間範圍：1945 年至 1955 年。事件依年份排列，國際事件以其對臺灣的影響作為收錄依據。此為整理版，正式使用前請再核對事件日期及史料。</footer>
+</main>
+<script>
+const data = [
+{y:"1945",c:"國際局勢",date:"8月15日",t:"日本宣布投降",d:"第二次世界大戰結束，日本宣布無條件投降。",i:"臺灣結束日本殖民統治，進入戰後接收時期。"},
+{y:"1945",c:"臺灣與政治",date:"10月25日",t:"中華民國接收臺灣",d:"中華民國政府代表在臺北舉行受降典禮。",i:"臺灣開始由中華民國政府接管。"},
+{y:"1946",c:"臺灣與政治",date:"12月25日",t:"中華民國憲法通過",d:"國民大會通過中華民國憲法。",i:"為後續政府體制及政治制度奠定法律基礎。"},
+{y:"1946",c:"國際局勢",date:"全年",t:"中國國共內戰擴大",d:"國民政府與中國共產黨之間的內戰持續。",i:"戰事發展影響中華民國政府後續遷臺。"},
+{y:"1947",c:"臺灣與政治",date:"2月28日",t:"二二八事件",d:"臺灣各地爆發抗爭，政府派兵鎮壓。",i:"造成重大傷亡，深刻影響臺灣政治及社會。"},
+{y:"1947",c:"臺灣與政治",date:"12月25日",t:"中華民國憲法施行",d:"中華民國憲法正式施行。",i:"中華民國進入憲政體制運作時期。"},
+{y:"1947",c:"國際局勢",date:"3月12日",t:"杜魯門主義提出",d:"美國提出援助受共產主義威脅國家的政策。",i:"美國冷戰政策逐漸成形，影響東亞局勢。"},
+{y:"1948",c:"臺灣與政治",date:"5月10日",t:"動員戡亂臨時條款公布",d:"國民政府公布《動員戡亂時期臨時條款》。",i:"擴大總統在非常時期的權力，影響臺灣後續政治體制。"},
+{y:"1948",c:"國際局勢",date:"6月起",t:"柏林封鎖",d:"蘇聯封鎖西柏林交通，引發美蘇對峙。",i:"冷戰對立加劇，東亞也逐漸成為美國戰略布局的一環。"},
+{y:"1949",c:"臺灣與政治",date:"5月20日",t:"臺灣實施戒嚴",d:"臺灣省政府發布戒嚴令。",i:"人民言論、集會及政治活動受到限制。"},
+{y:"1949",c:"臺灣與政治",date:"10月25日",t:"古寧頭戰役",d:"中國人民解放軍進攻金門，國軍取得勝利。",i:"金門成為臺海軍事防線的重要據點。"},
+{y:"1949",c:"臺灣與政治",date:"12月7日",t:"中華民國中央政府遷臺",d:"中央政府遷至臺北。",i:"臺北成為中央政府所在地。"},
+{y:"1949",c:"國際局勢",date:"10月1日",t:"中華人民共和國成立",d:"毛澤東宣布中華人民共和國成立。",i:"兩岸分治局面逐漸形成，臺灣的國際處境產生變化。"},
+{y:"1949",c:"國際局勢",date:"4月4日",t:"北大西洋公約組織成立",d:"美國與西歐國家成立北約。",i:"冷戰軍事同盟體系形成，影響美國在亞洲的安全政策。"},
+{y:"1950",c:"國際局勢",date:"6月25日",t:"韓戰爆發",d:"北韓軍隊越過三八線進攻南韓，韓戰爆發。",i:"美國派遣第七艦隊進入臺灣海峽，改變臺海軍事局勢。"},
+{y:"1950",c:"臺灣與政治",date:"3月1日",t:"蔣中正復行視事",d:"蔣中正於臺北恢復行使中華民國總統職權。",i:"中央政府在臺灣的政治統治體制逐步穩定。"},
+{y:"1950",c:"國際局勢",date:"10月",t:"中國人民志願軍參與韓戰",d:"中國派遣人民志願軍進入朝鮮參戰。",i:"東亞冷戰軍事局勢進一步升高。"},
+{y:"1951",c:"臺灣與政治",date:"4月",t:"美國軍事援助顧問團來臺",d:"美國派遣軍事援助顧問團協助臺灣防衛。",i:"臺灣的軍事訓練及國防體系逐步受到美國支援。"},
+{y:"1951",c:"國際局勢",date:"9月8日",t:"舊金山和約簽訂",d:"日本與多國簽訂和平條約，日本放棄對臺灣及澎湖的權利與要求。",i:"臺灣戰後國際法律地位問題受到關注，中華民國未受邀參與簽約。"},
+{y:"1952",c:"臺灣與政治",date:"4月28日",t:"中日和約簽訂",d:"中華民國與日本簽訂《中日和平條約》，又稱《臺北和約》。",i:"雙方建立戰後和平關係，處理相關戰爭問題。"},
+{y:"1952",c:"國際局勢",date:"4月28日",t:"舊金山和約生效",d:"日本恢復主權國家地位。",i:"日本戰後外交關係重新建立，影響臺灣與日本的往來。"},
+{y:"1953",c:"經濟與社會",date:"1月26日",t:"耕者有其田政策推動",d:"政府公布《實施耕者有其田條例》。",i:"土地所有權重新分配，改變臺灣農村結構。"},
+{y:"1953",c:"國際局勢",date:"7月27日",t:"韓戰停戰協定簽訂",d:"韓戰交戰各方簽訂停戰協定。",i:"東亞軍事局勢暫時緩和，但臺海緊張情勢仍持續。"},
+{y:"1954",c:"臺灣與政治",date:"9月3日",t:"第一次臺灣海峽危機",d:"中國人民解放軍開始砲擊金門等外島。",i:"臺灣及外島面臨軍事威脅，美國加強對臺安全關注。"},
+{y:"1954",c:"國際局勢",date:"12月2日",t:"中美共同防禦條約簽訂",d:"中華民國與美國簽訂《中美共同防禦條約》。",i:"美國與臺灣的軍事合作進一步制度化。"},
+{y:"1955",c:"國際局勢",date:"1月29日",t:"美國福爾摩沙決議案",d:"美國國會通過《福爾摩沙決議案》，授權總統使用武力協防臺灣及相關地區。",i:"美國對臺灣安全的支持進一步明確。"},
+{y:"1955",c:"臺灣與政治",date:"2月",t:"大陳島軍民撤退來臺",d:"大陳島居民及軍隊在美國協助下撤退至臺灣。",i:"大陳島居民遷入臺灣，形成新的移民聚落，影響人口及地方文化。"}
+];
+const years = Array.from({length:11},(_,i)=>String(1945+i));
+let selected = "1945";
+const timeline = document.getElementById("timeline");
+const eventsEl = document.getElementById("events");
+const checks = [...document.querySelectorAll('.filters input')];
+function activeCats(){ return checks.filter(x=>x.checked).map(x=>x.value); }
+function renderTimeline(){
+ timeline.innerHTML = "";
+ years.forEach(y=>{
+  const b=document.createElement("button"); b.className="year"+(selected===y?" active":"");
+  b.setAttribute("aria-label",y+"年");
+  b.innerHTML=`<span class="label">${y}</span><span class="dot"></span>`;
+  b.addEventListener("click",()=>{selected=y;render();});
+  timeline.appendChild(b);
+ });
+}
+function renderEvents(){
+ const visible=data.filter(e=>e.y===selected&&activeCats().includes(e.c));
+ document.getElementById("yearTitle").textContent=selected+" 年";
+ document.getElementById("count").textContent=visible.length+" 項事件";
+ eventsEl.innerHTML="";
+ if(!visible.length){eventsEl.innerHTML='<div class="empty">目前沒有符合圖層的事件，請調整篩選條件。</div>';return;}
+ visible.forEach(e=>{
+  const card=document.createElement("article");card.className="event";
+  card.innerHTML=`<div class="meta"><span>${e.date}</span><span class="tag">${e.c}</span></div><h3>${e.t}</h3><p>${e.d}</p><div class="impact"><strong>對臺灣的影響</strong><p>${e.i}</p></div>`;
+  eventsEl.appendChild(card);
+ });
+}
+function render(){renderTimeline();renderEvents();}
+checks.forEach(c=>c.addEventListener("change",renderEvents));
+render();
+</script>
+</body>
+</html>
